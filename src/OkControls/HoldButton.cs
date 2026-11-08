@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace OkControls;
 
 /// <summary>
-/// Halte-Button (wie bei DJI-Drohnen): gedrückt halten, der Button füllt sich von links
+/// Halte-Button: gedrückt halten, der Button füllt sich von links
 /// nach rechts. Erst wenn er ganz voll ist, wird beim Loslassen <see cref="HoldCompleted"/>
 /// ausgelöst. Wer vorher loslässt oder mit dem Finger/der Maus aus dem Button rutscht,
 /// bricht ab – es passiert nichts.

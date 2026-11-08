@@ -1,7 +1,7 @@
 # OkControls – HoldButton für Windows Forms
 
-Ein Button, den man **gedrückt halten** muss, bevor er auslöst – wie der Start-Button
-in DJI-Drohnen-Apps. Gedacht für Aktionen, die nicht versehentlich passieren dürfen:
+Ein Button, den man **gedrückt halten** muss, bevor er auslöst.
+Gedacht für Aktionen, die nicht versehentlich passieren dürfen:
 Daten neu laden, Verbindung testen, Löschen, Lizenz ändern.
 
 Windows Forms bringt so etwas nicht mit (auch .NET 10 nicht). Diese Bibliothek

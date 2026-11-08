@@ -2,7 +2,7 @@
 
 <img src="docs/icon_256.png" width="96" align="right" alt="okHoldButton icon">
 
-**Hold-to-confirm button for Windows Forms** – like the start button in DJI drone apps.
+**Hold-to-confirm button for Windows Forms.**
 You have to keep it pressed until it is full; the action fires only when you **release** it.
 Made for actions that must not happen by accident: reload data, test a connection, delete, change a licence.
 
@@ -11,16 +11,11 @@ self-drawn control – plus `TileButton`, a large rounded touch-friendly button 
 
 ![States](docs/states.png)
 
-## The idea: hold to take off, like a drone
+## The idea: the hold is the confirmation
 
-Anyone who has flown a DJI drone knows the pattern: the app does not start the motors on a simple tap.
-You press and **hold** the take-off (or landing / return-to-home) button, a ring or bar fills up, and only
-then does the drone act. A wrong touch in the pocket or a nervous tap does nothing.
-
-HoldButton brings exactly this behaviour to Windows Forms – for every action where a mistake is
-expensive: deleting data, overwriting a database, restarting a service, sending an order.
-Unlike a confirmation dialog ("Are you sure? Yes/No") there is no second window that people click away
-without reading: the confirmation **is** the hold itself, and you can still back out by letting go early.
+Instead of a confirmation dialog ("Are you sure? Yes/No") – a second window that people click away
+without reading – the confirmation **is** the hold itself. While the button fills you can still back out
+by letting go early. A wrong touch or a nervous tap does nothing.
 
 ## HoldButton vs. TileButton
 
@@ -95,9 +90,6 @@ The base control (see the comparison above): a large rounded button with icon an
 Code comments are German; a German description is in [src/OkControls/LIESMICH.md](src/OkControls/LIESMICH.md).
 
 Originally built for **okPriceTag** by [OnlineKraft](https://onlinekraft.com), a shelf-label printing app for kiosks.
-
-DJI is a trademark of SZ DJI Technology Co., Ltd. This project is not affiliated with or endorsed by DJI;
-the name is only used to describe the familiar interaction pattern.
 
 ## License
 

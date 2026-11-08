@@ -3,7 +3,8 @@
 Newest version on top.
 
 ## Documentation – 2026-11-09
-- README: section "The idea: hold to take off, like a drone" and a comparison table HoldButton vs. TileButton.
+- README: section "The idea: the hold is the confirmation" and a comparison table HoldButton vs. TileButton.
+- Removed the comparison with drone apps (README, German description, code comment) – it did not describe them correctly.
 - No code changes (still 1.0.0).
 
 ## 1.0.0 – 2026-11-08
