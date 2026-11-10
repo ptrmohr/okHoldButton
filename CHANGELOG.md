@@ -4,7 +4,7 @@ Newest version on top.
 
 ## Documentation – 2026-11-10 (code comments)
 - All source files fully documented in English: every class explains its job, every public and private
-  member has an XML comment, the remaining German comments are translated. No code changes (still 1.0.0).
+  member has an XML comment, the remaining German comments are translated. No code changes (still 1.0.0). Commit 4659e1c.
 
 ## Documentation – 2026-11-10
 - New `CLAUDE.md` with working rules ("collect before building"). Commit 711eafa. No code changes (still 1.0.0).
