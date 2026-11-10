@@ -2,6 +2,9 @@
 
 Newest version on top.
 
+## Documentation – 2026-11-10
+- New `CLAUDE.md` with working rules ("collect before building"). Commit 711eafa. No code changes (still 1.0.0).
+
 ## Documentation – 2026-11-09
 - README: section "The idea: the hold is the confirmation" and a comparison table HoldButton vs. TileButton.
 - Removed the comparison with drone apps (README, German description, code comment) – it did not describe them correctly.
