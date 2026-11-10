@@ -3,28 +3,30 @@ using System.Drawing.Drawing2D;
 
 namespace OkControls;
 
-/// <summary>Darstellung eines <see cref="TileButton"/>.</summary>
+/// <summary>Look of a <see cref="TileButton"/>.</summary>
 public enum TileStyle
 {
-    /// <summary>Weiß mit grauem Rahmen.</summary>
+    /// <summary>White with a grey border.</summary>
     Normal,
-    /// <summary>Blaugrau gefüllt, weiße Schrift (Hauptaktion).</summary>
+    /// <summary>Filled blue-grey, white text (main action).</summary>
     Primary,
-    /// <summary>Orange gefüllt (z. B. Drucker nicht erreichbar).</summary>
+    /// <summary>Filled orange (e.g. printer not reachable).</summary>
     Warning,
-    /// <summary>Sieht ausgegraut aus, bleibt aber bedienbar (für Halte-Buttons).</summary>
+    /// <summary>Looks greyed out but stays usable (for hold buttons).</summary>
     Muted
 }
 
 /// <summary>
-/// Großer, tablettauglicher Button wie in den Mockups: abgerundete Ecken, Icon links
-/// vom Text, optional eine zweite kleinere Textzeile (<see cref="SubText"/>).
-/// Wird komplett selbst gezeichnet, damit er auf allen Windows-Versionen gleich aussieht.
-/// Basis für <see cref="HoldButton"/>.
+/// Large, tablet-friendly button as in the mockups: rounded corners, icon left
+/// of the text, optionally a second smaller text line (<see cref="SubText"/>).
+/// Completely owner-drawn so it looks the same on all Windows versions. Implements IButtonControl, so it
+/// can be a form's AcceptButton/CancelButton and set a DialogResult.
+/// Base class of <see cref="HoldButton"/>.
 /// </summary>
 [DefaultEvent(nameof(Click))]
 public class TileButton : Control, IButtonControl
 {
+    // appearance values and the hover/pressed state
     private string _subText = string.Empty;
     private Image? _icon;
     private TileStyle _style = TileStyle.Normal;
@@ -33,6 +35,7 @@ public class TileButton : Control, IButtonControl
     private bool _pressed;
     private Color _accent = Palette.Accent;
 
+    /// <summary>Enables owner drawing, focus and standard click handling; transparent background, hand cursor.</summary>
     public TileButton()
     {
         SetStyle(ControlStyles.UserPaint
@@ -49,6 +52,7 @@ public class TileButton : Control, IButtonControl
         AccessibleRole = AccessibleRole.PushButton;
     }
 
+    /// <summary>Second, smaller text line under the text (e.g. "Stand: 07.11.2026").</summary>
     [Category("Appearance")]
     [DefaultValue("")]
     [Description("Zweite, kleinere Textzeile unter dem Text (z. B. \"Stand: 07.11.2026\").")]
@@ -58,6 +62,7 @@ public class TileButton : Control, IButtonControl
         set { _subText = value ?? string.Empty; Invalidate(); }
     }
 
+    /// <summary>Icon left of the text (hidden when disabled).</summary>
     [Category("Appearance")]
     [DefaultValue(null)]
     [Description("Icon links vom Text.")]
@@ -67,6 +72,7 @@ public class TileButton : Control, IButtonControl
         set { _icon = value; Invalidate(); }
     }
 
+    /// <summary>Colour style of the button.</summary>
     [Category("Appearance")]
     [DefaultValue(TileStyle.Normal)]
     public TileStyle TileStyle
@@ -75,6 +81,7 @@ public class TileButton : Control, IButtonControl
         set { _style = value; Invalidate(); }
     }
 
+    /// <summary>Corner radius in logical pixels.</summary>
     [Category("Appearance")]
     [DefaultValue(6)]
     public int CornerRadius
@@ -83,6 +90,7 @@ public class TileButton : Control, IButtonControl
         set { _radius = Math.Max(0, value); Invalidate(); }
     }
 
+    /// <summary>Accent colour: fill for Primary, focus border, hold fill when full.</summary>
     [Category("Appearance")]
     [Description("Akzentfarbe: Füllung bei Primary, Fokusrahmen, Haltefüllung im vollen Zustand.")]
     public Color AccentColor
@@ -91,20 +99,25 @@ public class TileButton : Control, IButtonControl
         set { _accent = value; Invalidate(); }
     }
 
+    /// <summary>Designer support for AccentColor (serialise only if changed, Reset).</summary>
     private bool ShouldSerializeAccentColor() => _accent != Palette.Accent;
 
     private void ResetAccentColor() => AccentColor = Palette.Accent;
 
+    /// <summary>IButtonControl: result set on the form when clicked (None = nothing).</summary>
     [Browsable(false)]
     [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public DialogResult DialogResult { get; set; } = DialogResult.None;
 
+    /// <summary>True while the left mouse button is down on the button.</summary>
     protected bool IsPressed => _pressed;
 
+    /// <summary>IButtonControl: not used (the default button is not drawn differently).</summary>
     public void NotifyDefault(bool value)
     {
     }
 
+    /// <summary>IButtonControl: raises Click (e.g. via AcceptButton or the space bar).</summary>
     public void PerformClick()
     {
         if (CanSelect)
@@ -113,12 +126,14 @@ public class TileButton : Control, IButtonControl
         }
     }
 
+    /// <summary>Repaints when the text changes.</summary>
     protected override void OnTextChanged(EventArgs e)
     {
         base.OnTextChanged(e);
         Invalidate();
     }
 
+    /// <summary>Hover highlight on.</summary>
     protected override void OnMouseEnter(EventArgs e)
     {
         _hover = true;
@@ -126,6 +141,7 @@ public class TileButton : Control, IButtonControl
         base.OnMouseEnter(e);
     }
 
+    /// <summary>Hover and pressed highlight off.</summary>
     protected override void OnMouseLeave(EventArgs e)
     {
         _hover = false;
@@ -134,6 +150,7 @@ public class TileButton : Control, IButtonControl
         base.OnMouseLeave(e);
     }
 
+    /// <summary>Pressed look and focus on left button down.</summary>
     protected override void OnMouseDown(MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)
@@ -145,6 +162,7 @@ public class TileButton : Control, IButtonControl
         base.OnMouseDown(e);
     }
 
+    /// <summary>Pressed look off.</summary>
     protected override void OnMouseUp(MouseEventArgs e)
     {
         _pressed = false;
@@ -152,6 +170,7 @@ public class TileButton : Control, IButtonControl
         base.OnMouseUp(e);
     }
 
+    /// <summary>Raises Click and sets the form's DialogResult if one is assigned.</summary>
     protected override void OnClick(EventArgs e)
     {
         base.OnClick(e);
@@ -161,6 +180,7 @@ public class TileButton : Control, IButtonControl
         }
     }
 
+    /// <summary>Keyboard: releasing Space or Enter triggers the button like a click.</summary>
     protected override void OnKeyUp(KeyEventArgs e)
     {
         if (e.KeyCode is Keys.Space or Keys.Enter)
@@ -171,25 +191,28 @@ public class TileButton : Control, IButtonControl
         base.OnKeyUp(e);
     }
 
+    /// <summary>Repaints in the enabled/disabled look.</summary>
     protected override void OnEnabledChanged(EventArgs e)
     {
         base.OnEnabledChanged(e);
         Invalidate();
     }
 
+    /// <summary>Repaints with the focus border.</summary>
     protected override void OnGotFocus(EventArgs e)
     {
         base.OnGotFocus(e);
         Invalidate();
     }
 
+    /// <summary>Repaints without the focus border.</summary>
     protected override void OnLostFocus(EventArgs e)
     {
         base.OnLostFocus(e);
         Invalidate();
     }
 
-    /// <summary>Hintergrundfarbe abhängig von Stil und Zustand.</summary>
+    /// <summary>Background colour depending on style and state (disabled, pressed, hover).</summary>
     protected virtual Color GetBackColor()
     {
         if (!Enabled)
@@ -218,6 +241,7 @@ public class TileButton : Control, IButtonControl
         return baseColor;
     }
 
+    /// <summary>Text colour: white on filled styles, grey when disabled or muted, otherwise ForeColor.</summary>
     protected virtual Color GetTextColor()
     {
         if (!Enabled || _style == TileStyle.Muted)
@@ -228,6 +252,7 @@ public class TileButton : Control, IButtonControl
         return _style is TileStyle.Primary or TileStyle.Warning ? Color.White : ForeColor;
     }
 
+    /// <summary>Border colour depending on the style.</summary>
     protected Color GetBorderColor() => _style switch
     {
         TileStyle.Primary => AccentColor,
@@ -236,6 +261,7 @@ public class TileButton : Control, IButtonControl
         _ => Palette.Border
     };
 
+    /// <summary>Paint order: background, overlay (for derived classes), border (accent while focused), content.</summary>
     protected override void OnPaint(PaintEventArgs e)
     {
         Graphics g = e.Graphics;
@@ -251,17 +277,21 @@ public class TileButton : Control, IButtonControl
         PaintContent(g, GetTextColor());
     }
 
-    /// <summary>Für abgeleitete Klassen: zwischen Hintergrund und Inhalt zeichnen (z. B. Fortschritt).</summary>
+    /// <summary>For derived classes: draw between background and content (e.g. progress).</summary>
     protected virtual void PaintOverlay(Graphics g, RectangleF rect, float radius)
     {
     }
 
-    /// <summary>Icon und Text(e) mittig zeichnen.</summary>
+    /// <summary>Draws icon and text(s) centred.</summary>
     protected virtual void PaintContent(Graphics g, Color textColor)
     {
         PaintContent(g, textColor, Text, _subText);
     }
 
+    /// <summary>
+    /// Draws icon, title and optional sub text as one centred block; text that does not fit is shortened with
+    /// "…". Disabled buttons show no icon, muted buttons a greyed icon.
+    /// </summary>
     protected void PaintContent(Graphics g, Color textColor, string title, string sub)
     {
         int gap = LogicalToDeviceUnits(10);
@@ -276,7 +306,7 @@ public class TileButton : Control, IButtonControl
         Image? icon = _icon;
         if (icon != null && !Enabled)
         {
-            icon = null; // ausgegraute Buttons ohne farbiges Icon
+            icon = null; // greyed-out buttons without a coloured icon
         }
 
         int iconWidth = icon?.Width ?? 0;

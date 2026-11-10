@@ -1,6 +1,10 @@
 namespace OkControls;
 
-/// <summary>Standardfarben der Steuerelemente (heller Look, Akzent Blaugrau). Über Eigenschaften änderbar.</summary>
+/// <summary>
+/// Default colours of the OkControls (light look with a blue-grey accent taken from the OK logo).
+/// The controls only use these as defaults – every colour can be overridden through the control's properties.
+/// Kept separate from the app's Theme so the library has no dependency on the app.
+/// </summary>
 internal static class Palette
 {
     public static readonly Color Accent = Color.FromArgb(62, 99, 119);        // #3E6377
