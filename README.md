@@ -1,96 +1,114 @@
-# okHoldButton
+# okHoldButton HTML
 
-<img src="docs/icon_256.png" width="96" align="right" alt="okHoldButton icon">
+**Dependency-free hold-to-confirm button for browsers.**
 
-**Hold-to-confirm button for Windows Forms.**
-You have to keep it pressed until it is full; the action fires only when you **release** it.
-Made for actions that must not happen by accident: reload data, test a connection, delete, change a licence.
+Press and hold until the progress reaches 100%. The action is confirmed **only when the user releases after the full hold**. A short click, early release, pointer leaving the button, losing window focus, or switching tabs cancels the action.
 
-Windows Forms has nothing like this (not even in .NET 10). This library fills the gap with one
-self-drawn control – plus `TileButton`, a large rounded touch-friendly button it is based on.
+This is the separate **HTML/JavaScript implementation** in the [html branch](https://github.com/ptrmohr/okHoldButton/tree/html). The original [C# / Windows Forms implementation](https://github.com/ptrmohr/okHoldButton/tree/main) remains unchanged on main.
 
-![States](docs/states.png)
+## Features
 
-## The idea: the hold is the confirmation
+- Native JavaScript ES module and CSS, no dependencies or framework.
+- Works with mouse, touch and Space bar; Enter does not confirm.
+- Public properties for 2/5-second (or custom) duration, button text and colours.
+- Complete-then-release confirmation; early release cancels.
+- Standard DOM events for completion, cancellation and progress.
+- MIT License, copyright 2026 OnlineKraft UG.
 
-Instead of a confirmation dialog ("Are you sure? Yes/No") – a second window that people click away
-without reading – the confirmation **is** the hold itself. While the button fills you can still back out
-by letting go early. A wrong touch or a nervous tap does nothing.
+## Interactive demo
 
-## HoldButton vs. TileButton
+Serve this branch as static files using any HTTP server, e.g.:
 
-| | `TileButton` | `HoldButton` |
-|---|---|---|
-| What it is | large rounded touch button (icon, two text lines, styles) | a `TileButton` that must be held |
-| Fires | immediately on click / tap (`Click`) | only after a full hold, on release (`HoldCompleted`) |
-| Enter / double-click | trigger it | do nothing |
-| Use for | everyday actions: search, print, open settings | actions that must not happen by accident |
+~~~sh
+python -m http.server 8000
+~~~
 
-Both look the same, so a form stays consistent: HoldButton simply inherits from TileButton and adds
-the hold logic.
+Open http://localhost:8000/ and choose 2 or 5 seconds. ES modules may not load correctly when index.html is opened from a local file:// address.
 
-## Behaviour
+## Integrate into your own HTML
 
-1. Press and hold → the button fills from left to right (default: 5 seconds).
-2. At 100 % it turns into the accent colour and shows the release text.
-3. **Only on release** the `HoldCompleted` event fires.
-4. Releasing early or sliding off the button = **cancel**; the bar visibly runs back, nothing happens.
-5. A short tap shows a hint (“keep holding”) for 2 seconds – users learn it without a permanent label.
+~~~html
+<link rel="stylesheet" href="./src/ok-hold-button.css">
+<button id="confirm" type="button"></button>
+<script type="module">
+  import { OkHoldButton } from "./src/ok-hold-button.js";
 
-## Highlights
+  const hold = new OkHoldButton("#confirm", {
+    holdDuration: 5000,
+    text: "DATEN LÖSCHEN",
+    subText: "Zum Bestätigen gedrückt halten",
+    releaseText: "JETZT LOSLASSEN",
+    fillColor: "#c4d7e4",
+    accentColor: "#3e6377",
+    onComplete: () => console.log("Confirmed"),
+    onCancel: ({ reason }) => console.log("Cancelled", reason)
+  });
 
-- **Touch-ready:** Windows normally turns a long press on a touch screen into a right-click.
-  HoldButton switches that off for itself (`MicrosoftTabletPenServiceProperty`), so tablets and POS touch screens work.
-- **No accidental trigger:** a click, Enter or double-click does nothing – only a complete hold.
-- **Keyboard:** holding the space bar works the same way.
-- **“Greyed out but usable”:** with `TileStyle = Muted` it looks disabled but can still be held.
-- **Designer-friendly:** all properties show up in the Visual Studio designer; default event is `HoldCompleted`.
-- **DPI-aware:** paddings and corner radii scale with the display.
-- No dependencies besides .NET / Windows Forms.
+  // Change public properties while the page is open:
+  hold.holdDuration = 2000;
+  hold.text = "NEU LADEN";
+</script>
+~~~
 
-## Usage
+## Use directly from GitHub through a CDN
 
-```csharp
-var btnReload = new OkControls.HoldButton
-{
-    Text = "Reload data",
-    SubText = "Last: 2026-11-07",       // optional second line
-    HoldDuration = 5000,                // milliseconds
-    ReleaseText = "Release now",        // default texts are German – set your own
-    HintText = "Keep holding",
-    TileStyle = OkControls.TileStyle.Muted,
-    Size = new Size(240, 56)
-};
-btnReload.HoldCompleted += (s, e) => ReloadData();
-```
+After publishing the branch, jsDelivr can serve both public source files without requiring you to store them on your own website:
 
-Add the project `src/OkControls/OkControls.csproj` to your solution (or copy the four `.cs` files).
+~~~html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ptrmohr/okHoldButton@html/src/ok-hold-button.css">
+<button id="confirm" type="button"></button>
+<script type="module">
+  import { OkHoldButton } from
+    "https://cdn.jsdelivr.net/gh/ptrmohr/okHoldButton@html/src/ok-hold-button.js";
 
-## Properties (selection)
+  new OkHoldButton("#confirm", {
+    holdDuration: 2000,
+    text: "BESTÄTIGEN",
+    onComplete: () => alert("Bestätigt!")
+  });
+</script>
+~~~
 
-| Property        | Default             | Meaning                                           |
-|-----------------|---------------------|---------------------------------------------------|
-| `HoldDuration`  | 5000                | hold time in ms until full                        |
-| `ReleaseText`   | „Jetzt loslassen“   | text when full (“release now”)                    |
-| `HintText`      | „Gedrückt halten“   | hint after a short tap (“keep holding”), empty = off |
-| `HoldFillColor` | #C4D7E4             | fill colour while holding                         |
-| `AccentColor`   | #3E6377             | fill at 100 %, primary style, focus frame         |
-| `HoldTextColor` | #2F4D5E             | text colour while holding                         |
-| `SubText`, `Icon`, `TileStyle`, `CornerRadius` | | inherited from `TileButton`           |
-| `Progress`      | 0                   | current fill 0..1 (code only)                     |
+**Important:** The html branch can change. Pin a tested commit SHA or release tag in production (replace @html with @COMMIT_SHA or @VERSION_TAG). Alternatively, host these two small files yourself. Always authorize sensitive server actions on the server as well.
 
-## TileButton
+## Public options and properties
 
-The base control (see the comparison above): a large rounded button with icon and optional second line. Styles: `Normal` (white), `Primary` (accent),
-`Warning` (orange), `Muted` (grey but usable). Behaves like a normal button (`Click`, `DialogResult`, Enter/Space).
+| Property | Default | Description |
+| --- | --- | --- |
+| holdDuration | 5000 | Milliseconds, range 250-60000 |
+| text | GEDRÜCKT HALTEN | Default main label |
+| subText | Zum Bestätigen gedrückt halten | Default subtitle |
+| releaseText | JETZT LOSLASSEN | Text after full hold |
+| hintText | Bitte länger gedrückt halten | Short-press hint |
+| successText | BESTÄTIGT | Confirmation text |
+| fillColor | #c4d7e4 | Progress fill |
+| accentColor | #3e6377 | Completed hold colour |
+| textColor | #2f4d5e | Regular label colour |
+| disabled | false | Disables input / cancels current hold |
+| onComplete | null | Callback after successful release |
+| onCancel | null | Callback after cancellation |
+| progress | read-only | Number between 0 and 1 |
+| state | read-only | idle / holding / ready / success |
+| completionCount | read-only | Number of successful holds |
 
-## Requirements
+Methods: reset(), cancel(reason), destroy().
 
-.NET 10, Windows Forms (`net10.0-windows`). Files: `HoldButton.cs`, `TileButton.cs`, `DrawHelper.cs`, `Palette.cs`.
-Code comments are German; a German description is in [src/OkControls/LIESMICH.md](src/OkControls/LIESMICH.md).
+DOM events: holdstart, holdprogress, holdready, holdcompleted, holdcancelled. The events bubble and supply details through event.detail.
 
-Originally built for **okPriceTag** by [OnlineKraft](https://onlinekraft.com), a shelf-label printing app for kiosks.
+~~~javascript
+document.querySelector("#confirm")
+  .addEventListener("holdcompleted", (event) => {
+    console.log("Confirmed in ms:", event.detail.elapsedMs);
+  });
+~~~
+
+## Project files
+
+- src/ok-hold-button.js — ES module and exported OkHoldButton class
+- src/ok-hold-button.css — scoped styles
+- index.html — interactive demonstration
+- LICENSE — MIT license inherited from the original repository
 
 ## License
 
-[MIT](LICENSE) © 2026 OnlineKraft UG – version history in [CHANGELOG.md](CHANGELOG.md).
+MIT © 2026 OnlineKraft UG. See LICENSE.
