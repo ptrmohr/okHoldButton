@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="okHoldButton HTML — hold-to-confirm JavaScript component by OnlineKraft.">
-  <title>okHoldButton HTML – Interaktive Demo</title>
+  <title>okHoldButton HTML — Interactive demo | OnlineKraft</title>
   <link rel="stylesheet" href="./src/ok-hold-button.css">
   <style>
     :root{color-scheme:light;font-family:system-ui,"Segoe UI",sans-serif}
@@ -34,30 +34,30 @@
   <header>
     <div class="eyebrow">ONLINEKRAFT · OPEN SOURCE · JAVASCRIPT</div>
     <h1>okHoldButton <span style="color:#6990a5">HTML</span></h1>
-    <p>Drücken, halten, loslassen: Die Aktion wird <strong>nur nach vollständigem Halten und anschließendem Loslassen</strong> bestätigt. Bei vorzeitigem Loslassen passiert nichts.</p>
+    <p>Press, hold, release. An action is confirmed <strong>only after the full hold and release</strong>. Let go too early, and nothing happens.</p>
   </header>
   <div class="grid">
     <section class="card">
-      <h2>Interaktive Demo</h2>
+      <h2>Try it yourself</h2>
       <div class="control">
-        <label for="duration"><strong>Haltedauer</strong></label>
+        <label for="duration"><strong>Hold duration</strong></label>
         <select id="duration">
-          <option value="2000">2 Sekunden</option>
-          <option value="5000" selected>5 Sekunden</option>
+          <option value="2000">2 seconds</option>
+          <option value="5000" selected>5 seconds</option>
         </select>
       </div>
-      <button id="confirm" type="button">Halten</button>
-      <div class="feedback" id="result" role="status" aria-live="polite">Bereit. Maus, Touch oder Leertaste verwenden.</div>
+      <button id="confirm" type="button">Press and hold</button>
+      <div class="feedback" id="result" role="status" aria-live="polite">Ready. Use your mouse, touch screen, or Space bar.</div>
     </section>
     <section class="card">
-      <h2>So funktioniert's</h2>
-      <p>1. Taste gedrückt halten: Die Füllung wächst.</p>
-      <p>2. Bei 100 % erscheint <strong>JETZT LOSLASSEN</strong>.</p>
-      <p>3. Erst beim Loslassen erfolgt die Bestätigung.</p>
-      <p>Loslassen vor 100 % oder den Finger wegziehen bricht ab. Enter oder ein kurzer Klick bestätigen nicht.</p>
+      <h2>How it works</h2>
+      <p>1. Press and hold: the progress fill grows.</p>
+      <p>2. At 100%, the button says <strong>RELEASE TO CONFIRM</strong>.</p>
+      <p>3. The confirmation fires when you release.</p>
+      <p>Releasing before 100% or moving your pointer away cancels. A short click or Enter key does not confirm.</p>
     </section>
     <section class="card full">
-      <h2>Einbau in eine Website</h2>
+      <h2>Use it in your website</h2>
       <pre>&lt;link rel="stylesheet" href="./src/ok-hold-button.css"&gt;
 &lt;button id="confirm"&gt;&lt;/button&gt;
 
@@ -66,33 +66,33 @@
 
   const hold = new OkHoldButton("#confirm", {
     holdDuration: 5000,  // or 2000
-    text: "BESTÄTIGEN",
+    text: "CONFIRM",
     onComplete: () =&gt; console.log("Confirmed!")
   });
 &lt;/script&gt;</pre>
-      <p>Weitere Optionen, Ereignisse und CDN-URLs stehen in <a href="./HTML_README.md">HTML_README.md</a>. <a href="https://github.com/ptrmohr/okHoldButton/tree/html">Quellcode auf GitHub</a>.</p>
+      <p>For all public options, events and CDN usage, see <a href="./README.md">README.md</a>. <a href="https://github.com/ptrmohr/okHoldButton/tree/html">View source on GitHub</a>. <a href="./docs/README.de.md" lang="de">Deutsch</a>.</p>
     </section>
   </div>
-  <footer>© 2026 OnlineKraft UG · MIT-Lizenz · Browserdemo ohne Server- oder Datenbankzugriff.</footer>
+  <footer>© 2026 OnlineKraft UG · MIT licensed · Browser demo without a database or backend.</footer>
 </main>
 <script type="module">
   import { OkHoldButton } from "./src/ok-hold-button.js";
   const result = document.getElementById("result");
   const button = new OkHoldButton("#confirm", {
     holdDuration: 5000,
-    text: "BESTÄTIGEN",
-    subText: "Zum Bestätigen gedrückt halten",
-    releaseText: "JETZT LOSLASSEN",
+    text: "CONFIRM",
+    subText: "Hold to confirm",
+    releaseText: "RELEASE TO CONFIRM",
     onComplete(detail) {
-      result.textContent = "✔ Bestätigt nach " + (detail.elapsedMs / 1000).toFixed(1) + " Sekunden.";
+      result.textContent = "✔ Confirmed after " + (detail.elapsedMs / 1000).toFixed(1) + " seconds.";
     },
     onCancel(detail) {
-      result.textContent = "Abgebrochen (" + detail.reason + ") — keine Aktion ausgelöst.";
+      result.textContent = "Cancelled (" + detail.reason + ") — no action was triggered.";
     }
   });
   document.getElementById("duration").addEventListener("change", e => {
     button.holdDuration = Number(e.target.value);
-    result.textContent = "Neue Haltedauer: " + (button.holdDuration / 1000) + " Sekunden.";
+    result.textContent = "New hold duration: " + (button.holdDuration / 1000) + " seconds.";
   });
 </script>
 </body>
