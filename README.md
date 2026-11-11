@@ -1,114 +1,159 @@
-# okHoldButton HTML
+# okHoldButton — HTML / JavaScript
 
-**Dependency-free hold-to-confirm button for browsers.**
+**Hold-to-confirm buttons for the web. No framework, no dependencies.**
 
-Press and hold until the progress reaches 100%. The action is confirmed **only when the user releases after the full hold**. A short click, early release, pointer leaving the button, losing window focus, or switching tabs cancels the action.
+Accidental clicks should not trigger irreversible actions. `okHoldButton` makes users **press, hold until the progress indicator is full, then release** before an action is confirmed.
 
-This is the separate **HTML/JavaScript implementation** in the [html branch](https://github.com/ptrmohr/okHoldButton/tree/html). The original [C# / Windows Forms implementation](https://github.com/ptrmohr/okHoldButton/tree/main) remains unchanged on main.
+A quick tap, an early release, moving the pointer off the button, losing focus, or switching browser tabs cancels the attempt. Nothing fires until the complete hold **and release**.
+
+[**C# / Windows Forms version**](https://github.com/ptrmohr/okHoldButton/tree/main) · [**HTML / JavaScript version**](https://github.com/ptrmohr/okHoldButton/tree/html) · [Deutsche Anleitung](docs/README.de.md)
+
+> This `html` branch contains the standalone web implementation. The original .NET / Windows Forms implementation on `main` is unchanged.
 
 ## Features
 
-- Native JavaScript ES module and CSS, no dependencies or framework.
-- Works with mouse, touch and Space bar; Enter does not confirm.
-- Public properties for 2/5-second (or custom) duration, button text and colours.
-- Complete-then-release confirmation; early release cancels.
-- Standard DOM events for completion, cancellation and progress.
-- MIT License, copyright 2026 OnlineKraft UG.
+- Native **ES module** and scoped CSS; no build tools or runtime dependencies.
+- Mouse, touch and **Space bar** interaction.
+- Hold time configurable in milliseconds: 2,000 ms, 5,000 ms or any value from 250 to 60,000 ms.
+- Linear progress indicator, release-to-confirm state and explicit success feedback.
+- Cancellation on early release, pointer departure, lost focus or backgrounding the tab.
+- Public properties, lifecycle methods, callbacks and standard **DOM CustomEvents**.
+- MIT licensed by OnlineKraft UG.
 
-## Interactive demo
+## Live demo (local)
 
-Serve this branch as static files using any HTTP server, e.g.:
+Open [`index.html`](index.html) using a local HTTP server. The demo includes a 2-second / 5-second selector and can be tried using a mouse, touch or keyboard.
 
-~~~sh
+```bash
+# Run in the repository root (Python 3)
 python -m http.server 8000
-~~~
+```
 
-Open http://localhost:8000/ and choose 2 or 5 seconds. ES modules may not load correctly when index.html is opened from a local file:// address.
+Then open **http://localhost:8000/**. ES modules may not load from `file://` URLs; use a local HTTP server or deploy the static files to your host.
 
-## Integrate into your own HTML
+## Quick start
 
-~~~html
+Include the CSS, add a regular `<button>`, and instantiate the class:
+
+```html
 <link rel="stylesheet" href="./src/ok-hold-button.css">
+
 <button id="confirm" type="button"></button>
+
 <script type="module">
   import { OkHoldButton } from "./src/ok-hold-button.js";
 
   const hold = new OkHoldButton("#confirm", {
-    holdDuration: 5000,
-    text: "DATEN LÖSCHEN",
-    subText: "Zum Bestätigen gedrückt halten",
-    releaseText: "JETZT LOSLASSEN",
-    fillColor: "#c4d7e4",
+    holdDuration: 2000,             // 2 seconds (default: 5000)
+    text: "DELETE ITEMS",
+    subText: "Press and hold to confirm",
+    releaseText: "RELEASE TO CONFIRM",
+    successText: "CONFIRMED",
     accentColor: "#3e6377",
-    onComplete: () => console.log("Confirmed"),
-    onCancel: ({ reason }) => console.log("Cancelled", reason)
+    fillColor: "#c4d7e4",
+    onComplete: () => deleteSelectedItems(),
+    onCancel: ({ reason }) => console.log("Cancelled:", reason)
   });
 
-  // Change public properties while the page is open:
-  hold.holdDuration = 2000;
-  hold.text = "NEU LADEN";
+  // You can change public properties at runtime:
+  hold.holdDuration = 5000;
+  hold.text = "RELOAD DATA";
 </script>
-~~~
+```
 
-## Use directly from GitHub through a CDN
+Replace `deleteSelectedItems()` with your own application logic. It is intentionally not part of this library.
 
-After publishing the branch, jsDelivr can serve both public source files without requiring you to store them on your own website:
+## Load directly from a CDN
 
-~~~html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ptrmohr/okHoldButton@html/src/ok-hold-button.css">
+If you do not want to host the two small files yourself, **jsDelivr** can serve them from this public GitHub repository:
+
+```html
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/ptrmohr/okHoldButton@html/src/ok-hold-button.css">
+
 <button id="confirm" type="button"></button>
+
 <script type="module">
   import { OkHoldButton } from
     "https://cdn.jsdelivr.net/gh/ptrmohr/okHoldButton@html/src/ok-hold-button.js";
 
   new OkHoldButton("#confirm", {
-    holdDuration: 2000,
-    text: "BESTÄTIGEN",
-    onComplete: () => alert("Bestätigt!")
+    holdDuration: 5000,
+    text: "CONFIRM",
+    onComplete: () => console.log("Action confirmed!")
   });
 </script>
-~~~
+```
 
-**Important:** The html branch can change. Pin a tested commit SHA or release tag in production (replace @html with @COMMIT_SHA or @VERSION_TAG). Alternatively, host these two small files yourself. Always authorize sensitive server actions on the server as well.
+**Production recommendation:** the `html` branch can change. Replace `@html` in **both** CDN URLs with a tested commit SHA or immutable release tag, and be aware that an external CDN introduces a third-party dependency. Hosting locally works just as well.
 
-## Public options and properties
+## Public API
+
+### Options and writable properties
 
 | Property | Default | Description |
 | --- | --- | --- |
-| holdDuration | 5000 | Milliseconds, range 250-60000 |
-| text | GEDRÜCKT HALTEN | Default main label |
-| subText | Zum Bestätigen gedrückt halten | Default subtitle |
-| releaseText | JETZT LOSLASSEN | Text after full hold |
-| hintText | Bitte länger gedrückt halten | Short-press hint |
-| successText | BESTÄTIGT | Confirmation text |
-| fillColor | #c4d7e4 | Progress fill |
-| accentColor | #3e6377 | Completed hold colour |
-| textColor | #2f4d5e | Regular label colour |
-| disabled | false | Disables input / cancels current hold |
-| onComplete | null | Callback after successful release |
-| onCancel | null | Callback after cancellation |
-| progress | read-only | Number between 0 and 1 |
-| state | read-only | idle / holding / ready / success |
-| completionCount | read-only | Number of successful holds |
+| `holdDuration` | `5000` | Hold time in milliseconds (250–60000) |
+| `text` | `"PRESS AND HOLD"` | Main button label |
+| `subText` | `"Hold to confirm"` | Secondary label |
+| `releaseText` | `"RELEASE TO CONFIRM"` | Label when hold reaches 100% |
+| `hintText` | `"Keep holding to confirm"` | Hint shown on a very short press |
+| `successText` | `"CONFIRMED"` | Text after successful release |
+| `fillColor` | `"#c4d7e4"` | Progress indicator |
+| `accentColor` | `"#3e6377"` | Ready-state background |
+| `textColor` | `"#2f4d5e"` | Normal text colour |
+| `disabled` | `false` | Disables the button and cancels an active hold |
+| `onComplete` | `null` | Callback invoked after successful release |
+| `onCancel` | `null` | Callback invoked after cancellation |
 
-Methods: reset(), cancel(reason), destroy().
+### Read-only properties
 
-DOM events: holdstart, holdprogress, holdready, holdcompleted, holdcancelled. The events bubble and supply details through event.detail.
+- `progress`: progress as a number between `0` and `1`
+- `state`: `"idle"`, `"holding"`, `"ready"` or `"success"`
+- `completionCount`: number of successfully confirmed holds
 
-~~~javascript
-document.querySelector("#confirm")
-  .addEventListener("holdcompleted", (event) => {
-    console.log("Confirmed in ms:", event.detail.elapsedMs);
-  });
-~~~
+### Methods
 
-## Project files
+- `reset()`: return to the initial state
+- `cancel(reason?)`: cancel the active hold
+- `destroy()`: remove listeners and restore the original button markup
 
-- src/ok-hold-button.js — ES module and exported OkHoldButton class
-- src/ok-hold-button.css — scoped styles
-- index.html — interactive demonstration
-- LICENSE — MIT license inherited from the original repository
+### DOM events
+
+All events bubble and provide data in `event.detail`.
+
+| Event | When |
+| --- | --- |
+| `holdstart` | Hold starts |
+| `holdprogress` | Progress changes |
+| `holdready` | Required duration is complete; waiting for release |
+| `holdcompleted` | Button is released after the required duration |
+| `holdcancelled` | Hold is cancelled |
+
+```js
+document.querySelector("#confirm").addEventListener("holdcompleted", (event) => {
+  console.log("Confirmed after", event.detail.elapsedMs, "ms");
+});
+```
+
+## Accessibility and safety notes
+
+The HTML implementation uses a native `<button>`, which supports browser focus and semantics. It accepts the Space bar as a hold gesture. Enter is intentionally not a confirmation shortcut. Pointer interaction uses Pointer Events and disables long-press context menus on the control.
+
+**Important:** this is a user-interface safeguard against accidental actions, **not an authorization or security mechanism**. Always validate destructive or privileged operations on the server.
+
+## Project structure
+
+```text
+src/
+  ok-hold-button.js    JavaScript ES module
+  ok-hold-button.css   Component styles
+index.html             Interactive English-language demo
+docs/
+  README.de.md         Optional German-language guide
+LICENSE                MIT license
+```
 
 ## License
 
-MIT © 2026 OnlineKraft UG. See LICENSE.
+MIT © 2026 OnlineKraft UG. See [LICENSE](LICENSE).
