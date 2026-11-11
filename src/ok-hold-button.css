@@ -1,0 +1,47 @@
+/* okHoldButton HTML — OnlineKraft UG, MIT license
+ * Scoped styles. No frameworks or font assets required.
+ */
+.okhb{
+  --okhb-accent:#3e6377;
+  --okhb-fill:#c4d7e4;
+  --okhb-text:#2f4d5e;
+  display:block;
+  width:100%;
+  min-height:76px;
+  padding:10px 20px;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid #91adbd;
+  border-radius:13px;
+  background:#eaf1f5;
+  color:var(--okhb-text);
+  cursor:pointer;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+  font:700 17px/1.3 system-ui,"Segoe UI",sans-serif;
+  transition:background 150ms,color 150ms,border-color 150ms;
+}
+.okhb:focus-visible{outline:3px solid #498fba;outline-offset:3px}
+.okhb:not(:disabled):hover{border-color:var(--okhb-accent)}
+.okhb__fill{
+  position:absolute;
+  inset:0 auto 0 0;
+  width:0;
+  background:var(--okhb-fill);
+  pointer-events:none;
+  z-index:0;
+  transition:width 150ms ease-out;
+}
+.okhb--holding .okhb__fill,.okhb--ready .okhb__fill{transition:none}
+.okhb__content{position:relative;z-index:1;display:grid;gap:3px}
+.okhb__label{display:block}
+.okhb__subtitle{display:block;font-size:12px;font-weight:450;opacity:.78}
+.okhb--ready{background:var(--okhb-accent);color:#fff;border-color:var(--okhb-accent)}
+.okhb--ready .okhb__fill{background:var(--okhb-accent)}
+.okhb--success{background:#deeee5;color:#236c4a;border-color:#91c6ad}
+.okhb--success .okhb__fill{background:transparent}
+.okhb:disabled{opacity:.52;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.okhb,.okhb__fill{transition:none}}
