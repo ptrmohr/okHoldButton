@@ -8,11 +8,11 @@
 export class OkHoldButton {
   static defaults = Object.freeze({
     holdDuration: 5000,
-    text: "GEDRÜCKT HALTEN",
-    subText: "Zum Bestätigen gedrückt halten",
-    releaseText: "JETZT LOSLASSEN",
-    hintText: "Bitte länger gedrückt halten",
-    successText: "BESTÄTIGT",
+    text: "PRESS AND HOLD",
+    subText: "Hold to confirm",
+    releaseText: "RELEASE TO CONFIRM",
+    hintText: "Keep holding to confirm",
+    successText: "CONFIRMED",
     fillColor: "#c4d7e4",
     accentColor: "#3e6377",
     textColor: "#2f4d5e",
@@ -238,7 +238,7 @@ export class OkHoldButton {
     this.element.classList.add("okhb--holding");
     this._fill.style.width = "0%";
     this._label.textContent = this.text;
-    this._subtitle.textContent = this._seconds(this.holdDuration) + " s halten";
+    this._subtitle.textContent = "Hold for " + this._seconds(this.holdDuration) + " s";
     this._emit("holdstart", this._detail({ progress: 0 }));
     this._frame = requestAnimationFrame(now => this._tick(now));
   }
@@ -248,14 +248,14 @@ export class OkHoldButton {
     const elapsed = Math.max(0, now - this._startedAt);
     this._progress = Math.min(1, elapsed / this.holdDuration);
     this._fill.style.width = (this._progress * 100).toFixed(2) + "%";
-    this._subtitle.textContent = "Noch " + this._seconds(this.holdDuration - elapsed) + " s";
+    this._subtitle.textContent = "Remaining " + this._seconds(this.holdDuration - elapsed) + " s";
     this._emit("holdprogress", this._detail({ progress: this._progress, elapsedMs: elapsed }));
     if (this._progress === 1) {
       this._state = "ready";
       this.element.classList.remove("okhb--holding");
       this.element.classList.add("okhb--ready");
       this._label.textContent = this.releaseText;
-      this._subtitle.textContent = "Zum Bestätigen loslassen";
+      this._subtitle.textContent = "Release to confirm";
       this.element.setAttribute("aria-label", this.releaseText);
       this._emit("holdready", this._detail({ progress: 1, elapsedMs: elapsed }));
       return;
@@ -279,7 +279,7 @@ export class OkHoldButton {
       this.element.classList.add("okhb--success");
       this._fill.style.width = "100%";
       this._label.textContent = this.successText;
-      this._subtitle.textContent = "Aktion bestätigt";
+      this._subtitle.textContent = "Action confirmed";
       this.element.setAttribute("aria-label", this.successText);
       const detail = { durationMs: this.holdDuration, elapsedMs: elapsed, source, count: this._count };
       this._emit("holdcompleted", detail);
